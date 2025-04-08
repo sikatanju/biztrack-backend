@@ -17,9 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-import core.urls as ulr
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('core/', include(ulr)),
+    path('core/', include('core.urls')),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
 ]
