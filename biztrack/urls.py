@@ -22,4 +22,5 @@ urlpatterns = [
     path('core/', include('core.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
+    path('api/', include('biztrack_app.urls')),
 ]
