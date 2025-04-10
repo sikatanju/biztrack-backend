@@ -17,4 +17,5 @@ class CreateCustomerSerializer(serializers.Serializer):
         name = self.validated_data['name']
         email = self.validated_data['email']
         phone = self.validated_data['phone']
-        Customer.objects.create(name=name, email=email, phone=phone, user=self.context['user'])
+        customer = Customer.objects.create(name=name, email=email, phone=phone, user=self.context['user'])
+        return customer
