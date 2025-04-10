@@ -9,6 +9,7 @@ djangorestframework = "*"
 djoser = "*"
 djangorestframework-simplejwt = "*"
 psycopg2-binary = "*"
+django-debug-toolbar = "*"
 
 [dev-packages]
 
