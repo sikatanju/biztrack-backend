@@ -2,9 +2,9 @@ from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Customer, Category, Product
+from .models import Customer, Category, Product, Invoice, InvoiceItem
 from .serializers import CustomerSerializer, CreateCustomerSerializer, CategorySerializer, CreateCategorySerializer, \
-    ProductSerializer, CreateProductSerializer
+    ProductSerializer, CreateProductSerializer, InvoiceSerializer, CreateInvoiceSerializer
 
 # Create your views here.
 class CustomerViewSet(ModelViewSet):
@@ -21,6 +21,10 @@ class CustomerViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'user': self.request.user}
+    
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user)
+    #     return super().perform_create(serializer)
     
 
 class CategoryViewSet(ModelViewSet):
@@ -53,3 +57,20 @@ class ProductViewSet(ModelViewSet):
     
     def get_serializer_context(self):
         return {'user': self.request.user}
+
+
+class InvoiceViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'delete']
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Invoice.objects.filter(user=self.request.user).select_related('customer').prefetch_related('items__product').all()
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateInvoiceSerializer 
+        
+        return InvoiceSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()

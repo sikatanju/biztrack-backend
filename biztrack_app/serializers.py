@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Customer, Category, Product
+from .models import Customer, Category, Product, Invoice, InvoiceItem
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -56,3 +56,47 @@ class CreateProductSerializer(serializers.Serializer):
         img_url = self.validated_data['img_url']
         category = self.validated_data['category']
         Product.objects.create(title=title, price=price, unit=unit, img_url=img_url, category=category, user=self.context['user'])
+
+
+class SimpleProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'title', 'img_url', 'category']
+
+
+class InvoiceItemSerializer(serializers.ModelSerializer):
+    product = SimpleProductSerializer()
+    class Meta:
+        model = InvoiceItem
+        fields = ['product', 'quantity', 'sale_price']
+
+
+class CreateInvoiceItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvoiceItem
+        fields = ['product', 'quantity', 'sale_price']
+
+
+class InvoiceSerializer(serializers.ModelSerializer):
+    items = InvoiceItemSerializer(many=True)
+    customer = CustomerSerializer()
+    class Meta:
+        model = Invoice
+        fields = ['id', 'total', 'vat', 'discount', 'payable', 'customer', 'items', 'created_at', 'updated_at']
+
+
+class CreateInvoiceSerializer(serializers.ModelSerializer):
+    items = CreateInvoiceItemSerializer(many=True)
+    class Meta:
+        model = Invoice
+        fields = ['id', 'total', 'vat', 'discount', 'payable', 'customer', 'items', 'created_at', 'updated_at']
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items')
+        user = self.context['request'].user
+        invoice = Invoice.objects.create(user=user, **validated_data)
+        
+        for item in items_data:
+            InvoiceItem.objects.create(invoice=invoice, **item)
+
+        return invoice
