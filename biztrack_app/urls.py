@@ -1,3 +1,4 @@
+from django.urls import path
 from rest_framework import routers
 from . import views
 
@@ -9,4 +10,6 @@ router.register('category', views.CategoryViewSet, basename='category')
 router.register('product', views.ProductViewSet, basename='product')
 router.register('invoice', views.InvoiceViewSet, basename='invoice')
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('summary', views.summary_view)
+] + router.urls

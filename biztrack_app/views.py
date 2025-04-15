@@ -1,6 +1,10 @@
 from django.shortcuts import render
+from django.db.models import Sum, Count
+
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 from .models import Customer, Category, Product, Invoice, InvoiceItem
 from .serializers import CustomerSerializer, CreateCustomerSerializer, CategorySerializer, CreateCategorySerializer, \
@@ -74,3 +78,22 @@ class InvoiceViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
+
+
+@api_view()
+def summary_view(request):
+    product_count = Product.objects.filter(user=request.user).count()
+    category_count = Category.objects.filter(user=request.user).count()
+    customer_count = Customer.objects.filter(user=request.user).count()
+    invoice = Invoice.objects.filter(user=request.user).aggregate(count=Count('id'), total_sum=Sum('total'), vat_sum=Sum('vat'), payable_sum=Sum('payable'))
+    return Response(
+        {'product': product_count,
+         'category': category_count,
+         'customer': customer_count,
+         'invoice': invoice['count'],
+         'total': '{0:.2f}'.format(invoice['total_sum']),
+         'vat': '{0:.2f}'.format(invoice['vat_sum']),
+         'payable': '{0:.2f}'.format(invoice['payable_sum']) 
+        }
+    )
+        
