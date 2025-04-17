@@ -11,6 +11,8 @@ djangorestframework-simplejwt = "*"
 psycopg2-binary = "*"
 django-debug-toolbar = "*"
 django-cors-headers = "*"
+pillow = "*"
+drf-nested-routers = "*"
 
 [dev-packages]
 
