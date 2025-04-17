@@ -37,9 +37,12 @@ class CreateCategorySerializer(serializers.Serializer):
     
 
 class ProductSerializer(serializers.ModelSerializer):
+    created_at = serializers.ReadOnlyField()
+    updated_at = serializers.ReadOnlyField()
     class Meta:
         model = Product
         fields = ['id', 'title', 'price', 'unit', 'img_url', 'category', 'created_at', 'updated_at']
+
 
 
 class CreateProductSerializer(serializers.Serializer):

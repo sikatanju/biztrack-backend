@@ -5,10 +5,10 @@ from . import views
 
 router = routers.DefaultRouter()
 
-router.register('customer', views.CustomerViewSet, basename='customer')
-router.register('category', views.CategoryViewSet, basename='category')
-router.register('product', views.ProductViewSet, basename='product')
-router.register('invoice', views.InvoiceViewSet, basename='invoice')
+router.register('customers', views.CustomerViewSet, basename='customers')
+router.register('categories', views.CategoryViewSet, basename='categories')
+router.register('products', views.ProductViewSet, basename='products')
+router.register('invoices', views.InvoiceViewSet, basename='invoices')
 
 urlpatterns = [
     path('summary', views.summary_view)
