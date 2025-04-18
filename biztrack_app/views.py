@@ -5,10 +5,11 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework import status
 
-from .models import Customer, Category, Product, Invoice, InvoiceItem
+from .models import Customer, Category, Product, Invoice, ProductImage
 from .serializers import CustomerSerializer, CreateCustomerSerializer, CategorySerializer, CreateCategorySerializer, \
-    ProductSerializer, CreateProductSerializer, InvoiceSerializer, CreateInvoiceSerializer
+    ProductSerializer, CreateProductSerializer, InvoiceSerializer, CreateInvoiceSerializer, ProductImageSerializer
 
 # Create your views here.
 class CustomerViewSet(ModelViewSet):
@@ -51,7 +52,7 @@ class ProductViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Product.objects.filter(user=self.request.user)
+        return Product.objects.filter(user=self.request.user).prefetch_related('image')
     
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -61,6 +62,26 @@ class ProductViewSet(ModelViewSet):
     
     def get_serializer_context(self):
         return {'user': self.request.user}
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        obj = self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(self.get_serializer(obj).data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        return serializer.save(user=self.request.user)
+
+
+class ProductImageViewSet(ModelViewSet):
+    serializer_class = ProductImageSerializer
+
+    def get_queryset(self):
+        return ProductImage.objects.filter(product_id=self.kwargs['product_pk'])
+    
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs['product_pk']}
 
 
 class InvoiceViewSet(ModelViewSet):
