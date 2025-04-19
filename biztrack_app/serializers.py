@@ -75,9 +75,10 @@ class CreateProductSerializer(serializers.Serializer):
 
 
 class SimpleProductSerializer(serializers.ModelSerializer):
+    # image = ProductImageSerializer(many=False, read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'title', 'img_url', 'category']
+        fields = ['id', 'title', 'category']
 
 
 class InvoiceItemSerializer(serializers.ModelSerializer):
