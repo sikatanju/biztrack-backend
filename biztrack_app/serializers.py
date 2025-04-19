@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Customer, Category, Product, Invoice, InvoiceItem
+from .models import Customer, Category, Product, Invoice, InvoiceItem, ProductImage
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -34,37 +34,51 @@ class CreateCategorySerializer(serializers.Serializer):
         title = self.validated_data['title']
         category = Category.objects.create(title=title, user=self.context['user'])
         return category
+
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        product_id = self.context['product_id']
+        if ProductImage.objects.filter(product_id=product_id).exists():
+            raise serializers.ValidationError("This product already has an image.")
+        
+        return ProductImage.objects.create(product_id=product_id, **validated_data)
     
+    class Meta:
+        model = ProductImage
+        fields = ['id', 'image']
+
 
 class ProductSerializer(serializers.ModelSerializer):
     created_at = serializers.ReadOnlyField()
     updated_at = serializers.ReadOnlyField()
+    image = ProductImageSerializer(many=False, read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'title', 'price', 'unit', 'img_url', 'category', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'price', 'unit', 'category', 'image', 'created_at', 'updated_at']
 
 
 
 class CreateProductSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     title = serializers.CharField()
     price = serializers.DecimalField(max_digits=6, decimal_places=2)
     unit = serializers.IntegerField()
-    img_url = serializers.CharField()
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
 
     def save(self, **kwargs):
         title = self.validated_data['title']
         price = self.validated_data['price']
         unit = self.validated_data['unit']
-        img_url = self.validated_data['img_url']
         category = self.validated_data['category']
-        Product.objects.create(title=title, price=price, unit=unit, img_url=img_url, category=category, user=self.context['user'])
+        return Product.objects.create(title=title, price=price, unit=unit, category=category, user=self.context['user'])
 
 
 class SimpleProductSerializer(serializers.ModelSerializer):
+    # image = ProductImageSerializer(many=False, read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'title', 'img_url', 'category']
+        fields = ['id', 'title', 'category']
 
 
 class InvoiceItemSerializer(serializers.ModelSerializer):
