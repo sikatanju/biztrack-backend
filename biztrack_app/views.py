@@ -107,14 +107,23 @@ def summary_view(request):
     category_count = Category.objects.filter(user=request.user).count()
     customer_count = Customer.objects.filter(user=request.user).count()
     invoice = Invoice.objects.filter(user=request.user).aggregate(count=Count('id'), total_sum=Sum('total'), vat_sum=Sum('vat'), payable_sum=Sum('payable'))
-    return Response(
-        {'product': product_count,
-         'category': category_count,
-         'customer': customer_count,
-         'invoice': invoice['count'],
-         'total': '{0:.2f}'.format(invoice['total_sum']),
-         'vat': '{0:.2f}'.format(invoice['vat_sum']),
-         'payable': '{0:.2f}'.format(invoice['payable_sum']) 
-        }
-    )
+    res = {}
+    if product_count:
+        res['product'] = product_count
+    if category_count:
+        res['category'] = category_count
+    if customer_count:
+        res['customer'] = customer_count
+
+    if invoice:
+        if invoice['count']:
+            res['invoice'] = invoice['count']
+        if invoice['total_sum']:
+            res['total'] = invoice['total_sum']
+        if invoice['vat_sum']:
+            res['vat'] = invoice['vat_sum']
+        if invoice['payable_sum']:
+            res['payable'] = invoice['payable_sum']
+
+    return Response(res)
         
