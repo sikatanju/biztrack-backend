@@ -28,6 +28,7 @@ urlpatterns = [
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('api/', include('biztrack_app.urls')),
+    path('', include('social_account.urls')),
 ] + debug_toolbar_urls()
 
 if settings.DEBUG:
