@@ -15,6 +15,7 @@ pillow = "*"
 drf-nested-routers = "*"
 django-allauth = "*"
 dj-rest-auth = "*"
+environs = "*"
 
 [dev-packages]
 

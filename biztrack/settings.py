@@ -13,11 +13,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+from environs import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+env.read_env()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -237,8 +238,8 @@ SOCIALACCOUNT_EMAIL_REQUIRED = False
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': '399782476469-ac9blt1e72ct81kk1n7vcg1pct4d5ag5.apps.googleusercontent.com',
-            'secret': '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',
+            'client_id': env('GOOGLE_CLIENT_ID', ''),
+            'secret': env('GOOGLE_SECRET_KEY', ''),
             'key': '',
         },
         'SCOPE': [
