@@ -13,6 +13,8 @@ django-debug-toolbar = "*"
 django-cors-headers = "*"
 pillow = "*"
 drf-nested-routers = "*"
+django-allauth = "*"
+environs = "*"
 
 [dev-packages]
 
