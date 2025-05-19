@@ -29,7 +29,8 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     # path('api/', include('biztrack_app.urls')),
     path('', include('social_account.urls')),
-    path('accounts/', include('allauth.urls'))
+    path('accounts/', include('allauth.urls')),
+    # path("_allauth/", include("allauth.headless.urls")),
 ] + debug_toolbar_urls()
 
 if settings.DEBUG:

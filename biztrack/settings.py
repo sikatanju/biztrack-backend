@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
     
     'allauth',
+    'allauth.headless',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
@@ -57,6 +58,8 @@ INSTALLED_APPS = [
     'biztrack_app',
     'social_account',
 ]
+
+HEADLESS_ONLY = True
 
 SITE_ID = 2
 
@@ -212,6 +215,8 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+LOGIN_REDIRECT_URL='/dashboard'
 
 # REST Framework settings
 # REST_FRAMEWORK = {
